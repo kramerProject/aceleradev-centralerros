@@ -34,7 +34,7 @@ class Group(models.Model):
 class User(models.Model):
     name = models.CharField(max_length=50)
     email = models.EmailField(validators=[EmailValidator], null=True)
-    password = models.CharField(max_length=50, validators=[min_validator])
+    password = models.CharField(max_length=500, validators=[min_validator])
     last_login = models.DateField(default=datetime.date.today)
     group = models.ManyToManyField(Group)
 
@@ -59,7 +59,7 @@ class Agent(models.Model):
     address = models.GenericIPAddressField(validators=[validate_ipv4_address], null=True)
     status = models.BooleanField(default=False)
     env = models.CharField(max_length=20, choices=ENV_CHOICES)
-    version = models.CharField(max_length=5)
+    version = models.CharField(max_length=20)
 
     def __str__(self):
         return self.name

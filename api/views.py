@@ -197,55 +197,77 @@ class EventApiViewSet(mixins.ListModelMixin, generics.GenericAPIView):
         return event_dict
 
 
-@api_view(["GET"])
+@api_view(["GET", "POST"])
 def details(request):
-        env = request.data.get('Enviroment')
-        level = request.data.get('Level')
-        data = request.data.get('Data')
 
-        queryset = Event.objects.filter(agent__env__contains=env,
-                                            level__contains=level, data__contains=data)
+            env = request.data.get('Enviroment')
+            level = request.data.get('Level')
+            data = request.data.get('Data')
 
-        detail = f'Erro no {queryset[0].agent.address} em {queryset[0].date.strftime("%d-%m-%y %H:%M:%S")}'
-        title = queryset[0].data
-        eventos = queryset.count()
-        collected = queryset[0].user.name
+            try:
+                queryset = Event.objects.filter(agent__env__contains=env,
+                                                level__contains=level, data__contains=data)
+                detail = f'Erro no {queryset[0].agent.address} em {queryset[0].date.strftime("%d-%m-%y %H:%M:%S")}'
+                title = queryset[0].data
+                eventos = queryset.count()
+                collected = queryset[0].user.name
 
-        dicionario = {"Detalhes": detail, "Título": title, "Level": level, "Eventos": eventos,
-                          "Coletado por": collected}
+                dicionario = {"Detalhes": detail, "Título": title, "Level": level, "Eventos": eventos,
+                              "Coletado por": collected}
 
-        return Response(dicionario)
+            except ValueError:
 
-@api_view(["POST"])
+                dicionario = {"Enviroment": "Desenvolvimento", "Level": "critical", "Data": "Ocorrencia3"}
+                return Response(f'informe algum parametro existente na base de dados para testar a função, exemplo:'
+                                f'{dicionario}')
+
+            return Response(dicionario)
+
+
+@api_view(["POST", "GET"])
 def cadastro(request):
-    name = request.data.get('name')
-    password = request.data.get('password')
-    email = request.data.get('email')
-    payload = {'data': email}
-    token = jwt.encode(payload, password, algorithm='HS256')
 
-    queryset = User.objects.filter(email__contains=email)
+    if request.method == "GET":
+        exemplo={"name": "", "email": "", "password": ""}
+        return Response(f'Digite seu nome, email e Senha ex: {exemplo}')
 
-    if queryset.count() == 0:
-        user = User.objects.create(name=name, email=email, password=token)
-        dicionario = {'status': 'Cadastrado com Sucesso',
+    else:
+
+        name = request.data.get('name')
+        password = request.data.get('password')
+        email = request.data.get('email')
+        payload = {'data': email}
+        token = jwt.encode(payload, password, algorithm='HS256')
+
+        queryset = User.objects.filter(email__contains=email)
+
+        if queryset.count() == 0:
+            user = User.objects.create(name=name, email=email, password=token)
+            dicionario = {'status': 'Cadastrado com Sucesso',
                       'name': user.name, 'email': user.email, 'password': user.password}
-        return Response(dicionario)
-    else:
-        return Response('Email consta em nossa base de dados')
+            return Response(dicionario)
+        else:
+            return Response('Email consta em nossa base de dados')
 
-@api_view(["GET"])
+@api_view(["GET", "POST"])
 def login(request):
-    email = request.data.get('email')
-    password = request.data.get('password')
-    payload = {'data': email}
-    token = jwt.encode(payload, password, algorithm='HS256')
-    queryset = User.objects.filter(password__contains=token)
 
-    if queryset:
-        return Response({'password': queryset[0].password, 'status': 'Senha Válida'})
+    if request.method == "GET":
+        exemplo={"name": "", "email": "", "password": ""}
+        return Response(f'Digite seu nome, email e Senha ex: {exemplo}')
+
     else:
-        return Response('Senha Inválida')
+
+        email = request.data.get('email')
+        password = request.data.get('password')
+        payload = {'data': email}
+        token = jwt.encode(payload, password, algorithm='HS256')
+        queryset = User.objects.filter(password__contains=token)
+
+        if queryset:
+            return Response({'password': queryset[0].password, 'status': 'Senha Válida'})
+        else:
+            return Response('Senha Inválida')
 
 
 
