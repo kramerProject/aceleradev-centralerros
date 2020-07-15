@@ -37,7 +37,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='agent',
             name='version',
-            field=models.CharField(default=django.utils.timezone.now),
+            field=models.CharField(default=django.utils.timezone.now, max_length=20),
             preserve_default=False,
         ),
     ]
