@@ -3,6 +3,7 @@ from django.db import models
 import datetime
 import jwt
 
+
 LEVEL_CHOICES = [
     ('critical', 'critical.'),
     ('debug', 'debug'),
@@ -52,7 +53,7 @@ class User(models.Model):
 
         if queryset.count() == 0:
             payload = {'data': self.email}
-            token = jwt.encode(payload,self.password, algorithm='HS256')
+            token = JWT.encode(payload,self.password, algorithm='HS256')
             self.password = token
             super(User, self).save(*args, **kwargs)
 
