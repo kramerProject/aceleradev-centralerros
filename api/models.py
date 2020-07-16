@@ -53,7 +53,7 @@ class User(models.Model):
 
         if queryset.count() == 0:
             payload = {'data': self.email}
-            token = JWT.encode(payload,self.password, algorithm='HS256')
+            token = jwt.encode(payload,self.password, algorithm='HS256')
             self.password = token
             super(User, self).save(*args, **kwargs)
 
