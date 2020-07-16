@@ -1,4 +1,5 @@
 from rest_framework.decorators import api_view
+from rest_framework.decorators import action
 from operator import itemgetter
 from rest_framework import viewsets
 from rest_framework import mixins
@@ -10,6 +11,7 @@ import jwt
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django.db.models import Q
+import rest_framework_jwt
 
 from api.api_permissions import OnlyAdminCanCreate
 
@@ -50,15 +52,6 @@ class UserApiViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserModelSerializer
 
-    def post(self, request, pk=None, format=None):
-        serializer = UserModelSerializer(data=request.data)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 class AgentApiViewSet(mixins.ListModelMixin, generics.GenericAPIView):
     queryset = Agent.objects.all()
     serializer_class = AgentModelSerializer
@@ -82,6 +75,7 @@ class EventApiViewSet(mixins.ListModelMixin, generics.GenericAPIView):
     serializer_class = EventModelSerializer
 
     def post(self, request, pk=None, format=None):
+
         serializer = EventModelSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -89,6 +83,13 @@ class EventApiViewSet(mixins.ListModelMixin, generics.GenericAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request, *args, **kwargs):
+        """
+        {"Enviroment": "Produção", "Order": "Level", "Buscar por":"Level", "Field": "critical"}
+        :param request:
+        :param args:
+        :param kwargs:
+        :return:
+        """
         env = request.data.get('Enviroment')
         order = request.data.get('Order')
         search = request.data.get('Buscar por')
@@ -105,6 +106,13 @@ class EventApiViewSet(mixins.ListModelMixin, generics.GenericAPIView):
                 return  Response(data=events_by_frequency)
 
     def put(self, request, *args, **kwargs):
+        """
+        {"Enviroment": "Produção", "Level": "critical", "Data":"Ocorrencia1"}
+        :param request:
+        :param args:
+        :param kwargs:
+        :return:
+        """
         env = request.data.get('Enviroment')
         level = request.data.get('Level')
         data = request.data.get('Data')
@@ -118,6 +126,13 @@ class EventApiViewSet(mixins.ListModelMixin, generics.GenericAPIView):
             return Response(f'{queryset} eventos foram arquivados')
 
     def delete(self, request):
+        """
+              {"Enviroment": "Produção", "Level": "critical", "Data":"Ocorrencia1"}
+              :param request:
+              :param args:
+              :param kwargs:
+              :return:
+              """
         env = request.data.get('Enviroment')
         level = request.data.get('Level')
         data = request.data.get('Data')
@@ -199,7 +214,11 @@ class EventApiViewSet(mixins.ListModelMixin, generics.GenericAPIView):
 
 @api_view(["GET", "POST"])
 def details(request):
-
+            """
+            {"Enviroment": "Desenvolvimento", "Level": "warning", "Data":"Ocorrencia3"}
+            :param request:
+            :return:
+            """
             env = request.data.get('Enviroment')
             level = request.data.get('Level')
             data = request.data.get('Data')
@@ -252,6 +271,16 @@ def cadastro(request):
 @api_view(["GET", "POST"])
 def login(request):
 
+    """
+    {
+    "id": 2,
+    "name": "ultimo",
+    "email": "ultimo@gmail.com",
+    "password": "12345678"
+}
+    :param request:
+    :return:
+    """
     if request.method == "GET":
         exemplo={"name": "", "email": "", "password": ""}
         return Response(f'Digite seu nome, email e Senha ex: {exemplo}')
@@ -265,7 +294,7 @@ def login(request):
         queryset = User.objects.filter(password__contains=token)
 
         if queryset:
-            return Response({'password': queryset[0].password, 'status': 'Senha Válida'})
+            return Response({'Mensagem': f'Bem Vindo {queryset[0].name}', 'status': 'Senha Válida'})
         else:
             return Response('Senha Inválida')
 

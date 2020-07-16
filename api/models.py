@@ -1,6 +1,7 @@
 from django.core.validators import MinLengthValidator, EmailValidator, validate_ipv4_address
 from django.db import models
 import datetime
+from rest_framework.response import Response
 import rest_framework_jwt
 import jwt
 
@@ -47,10 +48,15 @@ class User(models.Model):
     def get_admin_users(self, group):
         return User.objects.filter(group__name=group)
 
-    def set_password(self):
-        payload = {'data': self.email}
-        token = jwt.encode(payload,self.password, algorithm='HS256')
-        return token
+    def save(self, *args, **kwargs):
+
+        queryset = User.objects.filter(email__contains=self.email)
+
+        if queryset.count() == 0:
+            payload = {'data': self.email}
+            token = jwt.encode(payload,self.password, algorithm='HS256')
+            self.password = token
+            super(User, self).save(*args, **kwargs)
 
 
 class Agent(models.Model):
@@ -74,6 +80,7 @@ class Event(models.Model):
     agent = models.OneToOneField(Agent, on_delete=models.PROTECT)
     arquivado = models.BooleanField(default=False)
     date = models.DateTimeField(auto_now_add=True)
+
 
     def __str__(self):
         return self.level + 'in' + self.agent.name
