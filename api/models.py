@@ -1,8 +1,6 @@
 from django.core.validators import MinLengthValidator, EmailValidator, validate_ipv4_address
 from django.db import models
 import datetime
-from rest_framework.response import Response
-import rest_framework_jwt
 import jwt
 
 LEVEL_CHOICES = [

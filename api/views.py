@@ -1,5 +1,4 @@
 from rest_framework.decorators import api_view
-from rest_framework.decorators import action
 from operator import itemgetter
 from rest_framework import viewsets
 from rest_framework import mixins
@@ -10,9 +9,6 @@ from rest_framework import status
 import jwt
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-from django.db.models import Q
-import rest_framework_jwt
-
 from api.api_permissions import OnlyAdminCanCreate
 
 
