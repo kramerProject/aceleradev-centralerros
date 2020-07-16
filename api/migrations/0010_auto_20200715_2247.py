@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='event',
             name='env',
-            field=models.CharField(choices=[('Produção', 'Produção'), ('Homologação', 'Homologação'), ('Desenvolvimento', 'Desenvolvimento')], default=django.utils.timezone.now, max_length=20),
+            field=models.CharField(choices=[('Produção', 'Produção'), ('Homologação', 'Homologação'), ('Desenvolvimento', 'Desenvolvimento')], default=django.utils.timezone.now, max_length=200),
             preserve_default=False,
         ),
     ]
