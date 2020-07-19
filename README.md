@@ -25,4 +25,16 @@ Wireframes
 
 Os wireframes a seguir servem para ilustrar as funcionalidades básicas que a aplicação deverá ter, porém o time terá total liberdade para definir os detalhes de implementação e estratégia a ser utilizada no desenvolvimento.
 
+Para acessar:
+Cadastro de usuario  - https://aceleradev-centralerros.herokuapp.com/api/user/
+Login - https://aceleradev-centralerros.herokuapp.com/api/login/
+Cadastro dos erros e consultas - https://aceleradev-centralerros.herokuapp.com/api/event/
+        get - Filtra os eventos conforme pesquisa
+        put - arquiva o erro
+        delete - deleta os erros
+Consulta os detalhes de um erro - https://aceleradev-centralerros.herokuapp.com/api/details/
+        
+
+
+
 # aceleradev-centralerros
